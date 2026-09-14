@@ -2,39 +2,113 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Machi Black Hole | RatchetX</title>
+  <title>Hitman Grid | RatchetX</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="minisol.js"></script>
   <style>
-    body { background-color: #000; color: #fff; font-family: monospace; overflow: hidden; }
+    body { background-color: #000; color: #fff; font-family: monospace; }
     .neon-text { text-shadow: 0 0 10px currentColor; }
-    .radar-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-    @keyframes pulse-ring {
-      0% { transform: scale(0.5); opacity: 0.8; box-shadow: 0 0 10px #0ff; border-radius: 50%; }
-      100% { transform: scale(3); opacity: 0; box-shadow: 0 0 30px #f0f; border-radius: 50%; }
+    .radar-pulse {
+      animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
     }
-    .pulse { width: 100px; height: 100px; border: 2px solid #0ff; position: absolute; top: 50%; left: 50%; margin-top: -50px; margin-left: -50px; animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1); }
-    .pulse:nth-child(2) { animation-delay: 0.6s; }
-    .pulse:nth-child(3) { animation-delay: 1.2s; }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 0.8; box-shadow: 0 0 10px #0ff; }
+      80% { transform: scale(1.8); opacity: 0; box-shadow: 0 0 20px #0ff; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
   </style>
 </head>
-<body class="p-4 relative min-h-screen flex flex-col items-center justify-center">
+<body class="p-4 relative min-h-screen">
+  <!-- Background Grid -->
   <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(rgba(0,255,255,0.3) 1px, transparent 1px); background-size: 30px 30px;"></div>
 
-  <div class="radar-container w-full h-full flex flex-col items-center justify-center z-0">
-    <div class="relative w-64 h-64 flex items-center justify-center">
-        <div class="pulse"></div>
-        <div class="pulse"></div>
-        <div class="pulse"></div>
-        <div class="w-4 h-4 bg-red-500 rounded-full animate-ping z-10 shadow-[0_0_15px_#f00]"></div>
+  <div class="max-w-4xl mx-auto relative z-10">
+    <div class="flex justify-between items-center border-b border-fuchsia-500 pb-4 mb-6">
+      <h1 class="text-fuchsia-400 font-bold text-xl uppercase tracking-widest neon-text">The Hitman Grid // RatchetX</h1>
+      <button id="btn-connect" class="bg-cyan-900 border border-cyan-400 text-cyan-400 px-4 py-2 uppercase hover:bg-cyan-800 transition">Connect Wallet</button>
+    </div>
+
+    <div class="flex gap-6">
+      <!-- Grid -->
+      <div class="flex-1">
+        <p class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4">Active Bounties (Top 100)</p>
+        <div id="grid-container" class="grid grid-cols-5 gap-2">
+          <!-- JS will populate targets here -->
+        </div>
+      </div>
+
+      <!-- Action Panel -->
+      <div class="w-80 flex flex-col gap-4">
+        <div class="bg-gray-900 border border-cyan-500 p-4">
+          <p class="text-xs text-fuchsia-400 font-bold uppercase mb-3">Arbitrage Engine</p>
+          <div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Available Bait</span><span class="text-fuchsia-400 font-bold">1,000,000 TKN</span></div><div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Vault Admin</span><span class="text-red-500 font-bold animate-pulse">BURNED</span></div>
+          <div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Trigger Action</span><span class="text-red-400 font-bold">Buy 5 SOL</span></div>
+        </div>
+        
+        <button id="btn-execute" class="w-full bg-black text-gray-500 border border-gray-700 py-4 uppercase font-bold cursor-not-allowed">
+          Awaiting Target
+        </button>
+        <p id="tx-status" class="text-[10px] text-cyan-400 text-center uppercase"></p>
+      </div>
     </div>
   </div>
 
-  <div class="relative z-10 flex flex-col items-center gap-6 mt-32 text-center bg-black/60 p-8 border border-fuchsia-900 rounded-xl">
-    <h1 class="text-fuchsia-400 font-bold text-3xl uppercase tracking-widest neon-text">Targeting Systems Online</h1>
-    <div class="bg-red-900/40 border border-red-500 p-4 w-96">
-      <p class="text-red-400 text-sm font-bold uppercase animate-pulse">Awaiting On-Chain Deployment</p>
-      <p class="text-gray-400 text-[10px] mt-2">The Dark Forest is locking targets. Stand by.</p>
-    </div>
-  </div>
+  <script>
+    // Pure Vanilla JS logic using MiniSol
+    const TARGETS = ["machibigbrother...sol", "ansem...sol"]; // Mock
+    let connectedPubkey = null;
+
+    const gridContainer = document.getElementById('grid-container');
+    const btnConnect = document.getElementById('btn-connect');
+    const btnExecute = document.getElementById('btn-execute');
+    const statusTxt = document.getElementById('tx-status');
+
+    // Render Grid
+    function renderGrid() {
+      gridContainer.innerHTML = '';
+      for (let i = 0; i < 20; i++) {
+        const isTarget = i === 0;
+        gridContainer.innerHTML += `
+          <div class="aspect-square border flex flex-col items-center justify-center p-2 text-center 
+            ${isTarget ? 'bg-cyan-900/30 border-cyan-400' : 'bg-gray-900 border-gray-800 opacity-50'}">
+            <div class="text-2xl mb-1">${isTarget ? '🎯' : '👤'}</div>
+            <p class="text-[10px] ${isTarget ? 'text-cyan-200' : 'text-gray-500'}">Target ${i}</p>
+          </div>
+        `;
+      }
+    }
+
+    btnConnect.addEventListener('click', async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const resp = await window.solana.connect();
+          connectedPubkey = resp.publicKey.toString();
+          btnConnect.innerText = connectedPubkey.slice(0, 4) + '...' + connectedPubkey.slice(-4);
+          
+          // Mock checking if target
+          btnExecute.classList.remove('bg-black', 'text-gray-500', 'border-gray-700', 'cursor-not-allowed');
+          btnExecute.classList.add('bg-red-900', 'text-white', 'border-red-500', 'neon-text');
+          btnExecute.innerText = "Execute Sniper";
+        } catch (err) {
+          console.error(err);
+        }
+      } else {
+        alert("Phantom Wallet not found!");
+      }
+    });
+
+    btnExecute.addEventListener('click', async () => {
+      if (!connectedPubkey) return;
+      statusTxt.innerText = "Building transaction using MiniSol...";
+      
+      // Here we would use MiniSol.compileMessage and window.solana.signAndSendTransaction
+      // to execute the Pump.fun buy + SPL claim.
+      setTimeout(() => {
+        statusTxt.innerText = "Transaction confirmed! Target eliminated.";
+      }, 2000);
+    });
+
+    renderGrid();
+  </script>
 </body>
 </html>
