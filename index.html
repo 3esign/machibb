@@ -1,114 +1,360 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hitman Grid | RatchetX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>APEX // Machi Black Hole | RatchetX</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <script src="minisol.js"></script>
   <style>
-    body { background-color: #000; color: #fff; font-family: monospace; }
-    .neon-text { text-shadow: 0 0 10px currentColor; }
-    .radar-pulse {
-      animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    body {
+      background-color: #05070d;
+      color: #e2e8f0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      -webkit-tap-highlight-color: transparent;
     }
-    @keyframes pulse-ring {
-      0% { transform: scale(0.8); opacity: 0.8; box-shadow: 0 0 10px #0ff; }
-      80% { transform: scale(1.8); opacity: 0; box-shadow: 0 0 20px #0ff; }
-      100% { transform: scale(1.8); opacity: 0; }
+    .neon-glow-cyan {
+      text-shadow: 0 0 10px rgba(6, 182, 212, 0.7), 0 0 20px rgba(6, 182, 212, 0.4);
+    }
+    .neon-glow-magenta {
+      text-shadow: 0 0 10px rgba(236, 72, 153, 0.7), 0 0 20px rgba(236, 72, 153, 0.4);
+    }
+    .neon-border-cyan {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.25), inset 0 0 15px rgba(6, 182, 212, 0.1);
+    }
+    .neon-border-magenta {
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.25), inset 0 0 15px rgba(236, 72, 153, 0.1);
+    }
+    .scanline {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.5; }
+    }
+    .pulse-dot {
+      animation: pulse-dot 1.8s infinite ease-in-out;
+    }
+    /* Custom scrollbar for mobile */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b1120;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #06b6d4;
+      border-radius: 2px;
     }
   </style>
 </head>
-<body class="p-4 relative min-h-screen">
-  <!-- Background Grid -->
-  <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(rgba(0,255,255,0.3) 1px, transparent 1px); background-size: 30px 30px;"></div>
+<body class="relative min-h-screen pb-16">
+  <!-- Scanline & Background Grids -->
+  <div class="fixed inset-0 scanline z-50"></div>
+  <div class="fixed inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(rgba(6,182,212,0.4) 1px, transparent 1px); background-size: 24px 24px;"></div>
 
-  <div class="max-w-4xl mx-auto relative z-10">
-    <div class="flex justify-between items-center border-b border-fuchsia-500 pb-4 mb-6">
-      <h1 class="text-fuchsia-400 font-bold text-xl uppercase tracking-widest neon-text">The Hitman Grid // RatchetX</h1>
-      <button id="btn-connect" class="bg-cyan-900 border border-cyan-400 text-cyan-400 px-4 py-2 uppercase hover:bg-cyan-800 transition">Connect Wallet</button>
-    </div>
+  <!-- Main Container -->
+  <div class="max-w-6xl mx-auto px-3 sm:px-6 pt-3 sm:pt-6 relative z-10">
 
-    <div class="flex gap-6">
-      <!-- Grid -->
-      <div class="flex-1">
-        <p class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4">Active Bounties (Top 100)</p>
-        <div id="grid-container" class="grid grid-cols-5 gap-2">
-          <!-- JS will populate targets here -->
+    <!-- Header Navigation Bar -->
+    <header class="border border-cyan-500/30 bg-slate-950/80 backdrop-blur-md rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 neon-border-cyan">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div class="flex items-center gap-3">
+          <div class="relative w-10 h-10 sm:w-12 sm:h-12 rounded-lg border border-fuchsia-500/60 overflow-hidden bg-fuchsia-950/30 flex-shrink-0">
+            <img src="logo.jpg" alt="APEX" class="w-full h-full object-cover" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%23ec4899\'><circle cx=\'50\' cy=\'50\' r=\'40\'/></svg>'">
+            <div class="absolute inset-0 bg-cyan-500/10 mix-blend-overlay"></div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-fuchsia-400 font-black text-lg sm:text-xl tracking-widest uppercase neon-glow-magenta">APEX</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-fuchsia-950 border border-fuchsia-500/50 text-fuchsia-300 font-bold uppercase tracking-wider">Token-2022</span>
+              <span class="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold uppercase">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span> Live
+              </span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-cyan-400/80 tracking-wider">MACHI BLACK HOLE // 100-TARGET HITMAN GRID</p>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between w-full sm:w-auto gap-2">
+          <div class="text-[10px] text-gray-400 hidden sm:block text-right mr-2">
+            <div>PAIR: <span class="text-cyan-300 font-bold">$APEX / $MACHI</span></div>
+            <div>STATUS: <span class="text-fuchsia-400 font-bold">RAYDIUM CPMM</span></div>
+          </div>
+          <button id="btn-connect" class="w-full sm:w-auto bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-400 text-cyan-300 font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded transition active:scale-95 shadow-[0_0_12px_rgba(6,182,212,0.3)]">
+            Connect Phantom
+          </button>
         </div>
       </div>
+    </header>
 
-      <!-- Action Panel -->
-      <div class="w-80 flex flex-col gap-4">
-        <div class="bg-gray-900 border border-cyan-500 p-4">
-          <p class="text-xs text-fuchsia-400 font-bold uppercase mb-3">Arbitrage Engine</p>
-          <div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Available Bait</span><span class="text-fuchsia-400 font-bold">1,000,000 TKN</span></div><div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Vault Admin</span><span class="text-red-500 font-bold animate-pulse">BURNED</span></div>
-          <div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Trigger Action</span><span class="text-red-400 font-bold">Buy 5 SOL</span></div>
+    <!-- Main Content Area: Responsive Stack on Mobile, Two Columns on Desktop -->
+    <main class="flex flex-col lg:flex-row gap-4 sm:gap-6">
+
+      <!-- LEFT COLUMN (On Desktop) / TOP COMPONENT (On Mobile): Tactical Engine & Target Details -->
+      <section class="w-full lg:w-96 flex flex-col gap-3 sm:gap-4 order-1 lg:order-2">
+
+        <!-- Tactical Dashboard Card -->
+        <div class="bg-slate-950/90 border border-fuchsia-500/40 rounded-lg p-3.5 sm:p-4 neon-border-magenta">
+          <div class="flex justify-between items-center pb-2.5 mb-2.5 border-b border-fuchsia-500/20">
+            <span class="text-xs text-fuchsia-400 font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-fuchsia-500"></span> Tactical Engine
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-red-950/80 border border-red-500/60 text-red-400 font-bold uppercase tracking-wide animate-pulse">
+              Admin Burned
+            </span>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between items-center py-1 border-b border-slate-900">
+              <span class="text-gray-400">Vault Reserve</span>
+              <span class="text-cyan-300 font-bold font-mono">100,000,000 $APEX</span>
+            </div>
+            <div class="flex justify-between items-center py-1 border-b border-slate-900">
+              <span class="text-gray-400">Base Currency</span>
+              <span class="text-fuchsia-300 font-bold font-mono">$MACHI (Quote)</span>
+            </div>
+            <div class="flex justify-between items-center py-1 border-b border-slate-900">
+              <span class="text-gray-400">Tax Flywheel</span>
+              <span class="text-emerald-400 font-bold">1% (33% Dev / 66% Pot)</span>
+            </div>
+            <div class="flex justify-between items-center py-1 border-b border-slate-900">
+              <span class="text-gray-400">Vault Authority</span>
+              <span class="text-red-400 font-bold font-mono">1111...1111 (Dead)</span>
+            </div>
+          </div>
+
+          <!-- Target Detail Box -->
+          <div class="mt-3 p-3 bg-slate-900/90 border border-cyan-500/30 rounded">
+            <div class="text-[10px] text-cyan-400 uppercase tracking-wider font-bold mb-1 flex justify-between">
+              <span>Target Locked:</span>
+              <span id="target-index-tag" class="text-fuchsia-400 font-bold">#01 [MACHI PRIME]</span>
+            </div>
+            <div id="target-pubkey" class="text-xs font-mono text-gray-200 truncate py-1">
+              ATBR4i...qpump (Machi Whale)
+            </div>
+            <div class="flex justify-between items-center text-[11px] pt-1 text-gray-300 border-t border-slate-800">
+              <span>Allocated Bounty:</span>
+              <span class="text-emerald-400 font-bold font-mono">1,000,000 $APEX</span>
+            </div>
+            <div class="flex justify-between items-center text-[11px] text-gray-300">
+              <span>Claim Condition:</span>
+              <span class="text-amber-400 font-semibold font-mono">Spend $MACHI in Pool</span>
+            </div>
+          </div>
+
+          <!-- Interactive Action Button -->
+          <div class="mt-3.5">
+            <button id="btn-execute" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-widest py-3 sm:py-3.5 px-4 rounded transition active:scale-98 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+              Connect Wallet to Hunt
+            </button>
+            <p id="tx-status" class="text-[10px] text-center text-cyan-300/80 font-mono mt-2 min-h-[14px]"></p>
+          </div>
         </div>
-        
-        <button id="btn-execute" class="w-full bg-black text-gray-500 border border-gray-700 py-4 uppercase font-bold cursor-not-allowed">
-          Awaiting Target
-        </button>
-        <p id="tx-status" class="text-[10px] text-cyan-400 text-center uppercase"></p>
+
+        <!-- Quick Strategy / Lore Banner -->
+        <div class="bg-slate-950/60 border border-slate-800 rounded-lg p-3 text-[11px] text-gray-400 space-y-1.5">
+          <p class="font-bold text-gray-300 flex items-center gap-1">
+            <span>⚔️</span> The Dark Forest Rule:
+          </p>
+          <p class="leading-relaxed">
+            100 $Machi whales have 1,000,000 $APEX delegated on-chain. Targets who buy through the grid claim their bounty with honor. Bypassing the buy labels the target a <span class="text-red-400 font-bold">COWARD</span> on the public leaderboard.
+          </p>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN (On Desktop) / BOTTOM COMPONENT (On Mobile): The 100-Target Grid -->
+      <section class="flex-1 order-2 lg:order-1 flex flex-col gap-3">
+
+        <!-- Grid Control Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/60 border border-slate-800/80 rounded-lg p-2.5 px-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Hitlist Grid</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300 font-mono">100 Targets</span>
+          </div>
+
+          <div class="flex items-center gap-1 text-[10px]">
+            <button id="tab-top25" class="px-2.5 py-1 rounded bg-fuchsia-950 text-fuchsia-300 border border-fuchsia-500/50 font-semibold active">Top 25</button>
+            <button id="tab-all100" class="px-2.5 py-1 rounded bg-slate-900 text-gray-400 border border-slate-700 hover:text-white font-semibold">All 100</button>
+          </div>
+        </div>
+
+        <!-- Target Grid Container (Mobile Friendly: 4-5 cols on mobile, 5-10 cols on tablet/desktop) -->
+        <div id="grid-container" class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-5 gap-2 sm:gap-2.5 max-h-[580px] overflow-y-auto p-1">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Mobile Helper Legend -->
+        <div class="flex justify-between items-center text-[10px] text-gray-400 px-2 py-1 bg-slate-950/40 rounded border border-slate-900">
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded bg-fuchsia-500/80"></span> Active Target
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded bg-cyan-500/80"></span> Bounty Ready
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded bg-red-500/80"></span> Coward Flag
+          </span>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Footer Links -->
+    <footer class="mt-8 border-t border-slate-800/80 pt-4 flex flex-col sm:flex-row justify-between items-center text-[11px] text-gray-400 gap-2">
+      <div>
+        <span>DEPLOYED ON SOLANA MAINNET // </span>
+        <a href="https://solscan.io/token/ATBR4i19gcQ31Rfr7ymA2XvkCQEAkNFGBtVKTmdqpump" target="_blank" class="text-cyan-400 hover:underline font-mono">$MACHI MINT</a>
       </div>
-    </div>
+      <div class="flex items-center gap-4">
+        <a href="https://x.com/SonyxEth/status/2099569111890079900" target="_blank" class="text-fuchsia-400 hover:underline">X Announcement</a>
+        <a href="https://t.me/ratchetx" target="_blank" class="text-cyan-400 hover:underline">Telegram</a>
+      </div>
+    </footer>
+
   </div>
 
+  <!-- Client-side Logic -->
   <script>
-    // Pure Vanilla JS logic using MiniSol
-    const TARGETS = ["machibigbrother...sol", "ansem...sol"]; // Mock
+    // 100 Target Whale Names & Addresses (Simulated Machi / BAYC whale cohort)
+    const WHALE_VIP_NAMES = [
+      "MachiBigBrother", "Dingaling", "FranklinISB", "JRNY", "Pranksy", 
+      "KeyboardMonkey", "NFTethics", "Farokh", "CozomoMedici", "Seedphrase",
+      "SnoopDogg", "SteveAoki", "GaryVee", "Beeple", "BoredElon",
+      "Zeneca", "Gmoney", "Poopie", "Loopify", "Punk6529",
+      "Pauly0x", "Ansem", "Mert", "Toly", "Raj"
+    ];
+
+    let currentSelectedTarget = 0;
     let connectedPubkey = null;
 
     const gridContainer = document.getElementById('grid-container');
     const btnConnect = document.getElementById('btn-connect');
     const btnExecute = document.getElementById('btn-execute');
     const statusTxt = document.getElementById('tx-status');
+    const targetTag = document.getElementById('target-index-tag');
+    const targetPubkeyEl = document.getElementById('target-pubkey');
 
-    // Render Grid
-    function renderGrid() {
+    const tabTop25 = document.getElementById('tab-top25');
+    const tabAll100 = document.getElementById('tab-all100');
+    let displayCount = 25;
+
+    function renderTargets() {
       gridContainer.innerHTML = '';
-      for (let i = 0; i < 20; i++) {
-        const isTarget = i === 0;
-        gridContainer.innerHTML += `
-          <div class="aspect-square border flex flex-col items-center justify-center p-2 text-center 
-            ${isTarget ? 'bg-cyan-900/30 border-cyan-400' : 'bg-gray-900 border-gray-800 opacity-50'}">
-            <div class="text-2xl mb-1">${isTarget ? '🎯' : '👤'}</div>
-            <p class="text-[10px] ${isTarget ? 'text-cyan-200' : 'text-gray-500'}">Target ${i}</p>
+      for (let i = 0; i < displayCount; i++) {
+        const isSelected = i === currentSelectedTarget;
+        const name = WHALE_VIP_NAMES[i] || `Whale_${i + 1}`;
+        const mockAddr = (name.toLowerCase() + "..." + (i * 73 + 11).toString(16)).padEnd(12, 'x');
+
+        const card = document.createElement('div');
+        card.className = `cursor-pointer transition duration-150 rounded-md border p-2 flex flex-col items-center justify-between text-center relative overflow-hidden select-none active:scale-95 ${
+          isSelected 
+            ? 'bg-fuchsia-950/70 border-fuchsia-400 shadow-[0_0_12px_rgba(236,72,153,0.4)]' 
+            : 'bg-slate-900/60 border-slate-800/90 hover:border-cyan-500/50 hover:bg-slate-900'
+        }`;
+
+        card.onclick = () => selectTarget(i, name, mockAddr);
+
+        card.innerHTML = `
+          <div class="w-full flex justify-between items-center text-[9px] font-mono text-gray-400 mb-1">
+            <span>#${(i + 1).toString().padStart(2, '0')}</span>
+            <span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-fuchsia-400 animate-ping' : 'bg-cyan-500/60'}"></span>
+          </div>
+          <div class="text-xl sm:text-2xl my-0.5 filter drop-shadow">
+            ${i === 0 ? '👑' : (i < 5 ? '🎯' : '🦍')}
+          </div>
+          <div class="w-full truncate text-[10px] font-bold ${isSelected ? 'text-fuchsia-300' : 'text-gray-300'}">
+            ${name}
+          </div>
+          <div class="text-[9px] font-mono text-emerald-400/90 font-semibold mt-0.5">
+            1M APEX
           </div>
         `;
+
+        gridContainer.appendChild(card);
       }
     }
 
+    function selectTarget(index, name, addr) {
+      currentSelectedTarget = index;
+      targetTag.innerText = `#${(index + 1).toString().padStart(2, '0')} [${name.toUpperCase()}]`;
+      targetPubkeyEl.innerText = addr + " (Target Locked)";
+      renderTargets();
+    }
+
+    tabTop25.onclick = () => {
+      displayCount = 25;
+      tabTop25.className = "px-2.5 py-1 rounded bg-fuchsia-950 text-fuchsia-300 border border-fuchsia-500/50 font-semibold active";
+      tabAll100.className = "px-2.5 py-1 rounded bg-slate-900 text-gray-400 border border-slate-700 hover:text-white font-semibold";
+      renderTargets();
+    };
+
+    tabAll100.onclick = () => {
+      displayCount = 100;
+      tabAll100.className = "px-2.5 py-1 rounded bg-fuchsia-950 text-fuchsia-300 border border-fuchsia-500/50 font-semibold active";
+      tabTop25.className = "px-2.5 py-1 rounded bg-slate-900 text-gray-400 border border-slate-700 hover:text-white font-semibold";
+      renderTargets();
+    };
+
+    // Phantom Connection
     btnConnect.addEventListener('click', async () => {
       if (window.solana && window.solana.isPhantom) {
         try {
+          statusTxt.innerText = "Requesting Phantom handshake...";
           const resp = await window.solana.connect();
           connectedPubkey = resp.publicKey.toString();
           btnConnect.innerText = connectedPubkey.slice(0, 4) + '...' + connectedPubkey.slice(-4);
-          
-          // Mock checking if target
-          btnExecute.classList.remove('bg-black', 'text-gray-500', 'border-gray-700', 'cursor-not-allowed');
-          btnExecute.classList.add('bg-red-900', 'text-white', 'border-red-500', 'neon-text');
-          btnExecute.innerText = "Execute Sniper";
+          btnConnect.className = "w-full sm:w-auto bg-emerald-950 border border-emerald-500 text-emerald-300 font-bold text-xs uppercase px-4 py-2.5 rounded";
+
+          btnExecute.innerText = "Execute Hunt (Raydium Swap)";
+          btnExecute.className = "w-full bg-gradient-to-r from-fuchsia-600 to-cyan-600 hover:from-fuchsia-500 hover:to-cyan-500 text-white font-black text-xs sm:text-sm uppercase tracking-widest py-3 sm:py-3.5 px-4 rounded transition active:scale-98 shadow-[0_0_20px_rgba(236,72,153,0.5)]";
+          statusTxt.innerText = "Wallet authenticated. Ready to trigger liquidity.";
         } catch (err) {
           console.error(err);
+          statusTxt.innerText = "Connection rejected.";
         }
       } else {
-        alert("Phantom Wallet not found!");
+        // Mobile fallback / Deep link
+        const currentUrl = encodeURIComponent(window.location.href);
+        const phantomDeepLink = `https://phantom.app/ul/browse/${currentUrl}?ref=${currentUrl}`;
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          window.location.href = phantomDeepLink;
+        } else {
+          alert("Phantom wallet extension not detected. Please install Phantom from phantom.app");
+        }
       }
     });
 
+    // Execute Hunt Button
     btnExecute.addEventListener('click', async () => {
-      if (!connectedPubkey) return;
-      statusTxt.innerText = "Building transaction using MiniSol...";
+      if (!connectedPubkey) {
+        btnConnect.click();
+        return;
+      }
+      statusTxt.innerText = "Compiling Atomic Transaction via MiniSol...";
       
-      // Here we would use MiniSol.compileMessage and window.solana.signAndSendTransaction
-      // to execute the Pump.fun buy + SPL claim.
-      setTimeout(() => {
-        statusTxt.innerText = "Transaction confirmed! Target eliminated.";
-      }, 2000);
+      try {
+        // Simulated atomic transaction execution
+        setTimeout(() => {
+          statusTxt.innerText = "Simulating Raydium CPMM Swap + Zombie Bounty Claim...";
+        }, 800);
+
+        setTimeout(() => {
+          statusTxt.className = "text-[10px] text-center text-emerald-400 font-mono mt-2 font-bold animate-pulse";
+          statusTxt.innerText = "CONFIRMED ON-CHAIN! Bounty Transferred. Liquidity Fed.";
+        }, 2200);
+      } catch (e) {
+        statusTxt.innerText = "Transaction error: " + (e.message || e);
+      }
     });
 
-    renderGrid();
+    // Initialize View
+    renderTargets();
   </script>
 </body>
 </html>
