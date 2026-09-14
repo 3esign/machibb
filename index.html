@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Machi Black Hole | RatchetX</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body { background-color: #000; color: #fff; font-family: monospace; overflow: hidden; }
+    .neon-text { text-shadow: 0 0 10px currentColor; }
+    .radar-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.5); opacity: 0.8; box-shadow: 0 0 10px #0ff; border-radius: 50%; }
+      100% { transform: scale(3); opacity: 0; box-shadow: 0 0 30px #f0f; border-radius: 50%; }
+    }
+    .pulse { width: 100px; height: 100px; border: 2px solid #0ff; position: absolute; top: 50%; left: 50%; margin-top: -50px; margin-left: -50px; animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1); }
+    .pulse:nth-child(2) { animation-delay: 0.6s; }
+    .pulse:nth-child(3) { animation-delay: 1.2s; }
+  </style>
+</head>
+<body class="p-4 relative min-h-screen flex flex-col items-center justify-center">
+  <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(rgba(0,255,255,0.3) 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+  <div class="radar-container w-full h-full flex flex-col items-center justify-center z-0">
+    <div class="relative w-64 h-64 flex items-center justify-center">
+        <div class="pulse"></div>
+        <div class="pulse"></div>
+        <div class="pulse"></div>
+        <div class="w-4 h-4 bg-red-500 rounded-full animate-ping z-10 shadow-[0_0_15px_#f00]"></div>
+    </div>
+  </div>
+
+  <div class="relative z-10 flex flex-col items-center gap-6 mt-32 text-center bg-black/60 p-8 border border-fuchsia-900 rounded-xl">
+    <h1 class="text-fuchsia-400 font-bold text-3xl uppercase tracking-widest neon-text">Targeting Systems Online</h1>
+    <div class="bg-red-900/40 border border-red-500 p-4 w-96">
+      <p class="text-red-400 text-sm font-bold uppercase animate-pulse">Awaiting On-Chain Deployment</p>
+      <p class="text-gray-400 text-[10px] mt-2">The Dark Forest is locking targets. Stand by.</p>
+    </div>
+  </div>
+</body>
+</html>
